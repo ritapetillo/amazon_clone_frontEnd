@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { getProductByID, getAllCategories } from "../fetches";
+import {
+  getProductByID,
+  getAllCategories,
+  postProduct,
+  editProduct,
+  uploadProductImage,
+} from "../fetches";
 import { Row, Form, Button } from "react-bootstrap";
 
 function ProductForm({ match, history }) {
@@ -45,15 +51,24 @@ function ProductForm({ match, history }) {
     setProduct(newProduct);
     console.log(product);
   };
-  const handleSubmit = (e) => {
-    console.log(product);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    let res;
+    if (match.params.id === "new") {
+      res = await postProduct(product);
+    } else {
+      res = await editProduct(match.params.id, product);
+    }
+    await uploadProductImage(res._id, productImage);
+    setProduct("");
+    history.push("/admin");
   };
   const handleChangeImage = (e) => {
     setProductImage(e.target.files[0]);
     const newProduct = { ...product };
     newProduct.imageUrl = e.target.files[0].name;
-      setProduct(newProduct);
-      console.log(product)
+    setProduct(newProduct);
+    console.log(product);
   };
   return (
     <div className="d-flex flex-column align-items-center justify-content-center mt-4">
